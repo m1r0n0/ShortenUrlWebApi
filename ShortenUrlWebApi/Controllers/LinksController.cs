@@ -2,9 +2,11 @@
 using BusinessLayer.DTOs;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
+using DataAccessLayer.Enums;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using DataAccessLayer.Exeptions;
 
 namespace ShortenUrlWebApi.Controllers
 {
@@ -44,22 +46,39 @@ namespace ShortenUrlWebApi.Controllers
             return Ok(linkDTO);
         }
 
-        //[Route("{id}/{state}")]
         [HttpPost]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult ChangeLinkPrivacy(int id, bool state)
         {
-            string result = _shortenService.ChangePrivacy(id, state, GetUserIdFromClaims());
-            switch (result)
+            try
             {
-                case "Ok":
-                    return Ok();
-                case "Unauthorized":
-                    return Unauthorized();
-                case "NotFound":
-                    return NotFound();//exeptions
+                _shortenService.ChangePrivacy(id, state, GetUserIdFromClaims());
+                return Ok();
             }
-            return BadRequest();
+            catch (UnauthorizedException)
+            {
+                return Unauthorized();
+            }
+            catch (NotFoundException)
+            {
+                return NotFound();
+            }
+            catch (BadRequestException)
+            {
+                return BadRequest();
+            }
+            /*switch (result)
+            {
+                case HttpReturnCode.Ok:
+                    
+                case "Unauthorized":
+                    
+                case "NotFound":
+                    return NotFound();
+            }*/
         }
     }
 }

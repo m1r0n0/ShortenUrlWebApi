@@ -1,5 +1,7 @@
 ﻿using BusinessLayer.DTOs;
 using BusinessLayer.Interfaces;
+using DataAccessLayer.Enums;
+using DataAccessLayer.Exeptions;
 using DataAccessLayer.Models;
 using Microsoft.Extensions.Configuration;
 
@@ -107,7 +109,7 @@ namespace BusinessLayer.Services
             return id;
         }
 
-        public string ChangePrivacy(int id, bool state, string userId)
+        public void ChangePrivacy(int id, bool state, string userId)
         {
             var link = _context.UrlList.Where(x => x.Id == id).FirstOrDefault();
             if (link != null)
@@ -125,12 +127,14 @@ namespace BusinessLayer.Services
                             link.IsPrivate = true;
                         }
                         _context.SaveChanges();
-                        return "Ok";
+                        //return HttpReturnCode.Ok;
                     }
                 }
-                return "Unauthorized";
+                throw new UnauthorizedException();
+                //return HttpReturnCode.Unauthorized;
             }
-            return "NotFound";
+            throw new NotFoundException();
+            //return HttpReturnCode.NotFound;
         }
     }
 }

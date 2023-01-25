@@ -1,4 +1,5 @@
 ﻿using BusinessLayer.DTOs;
+using DataAccessLayer.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace BusinessLayer.Interfaces
 {
     public interface IShortenService
     {
-        string ChangePrivacy(int id, bool state, string userId);
+        void ChangePrivacy(int id, bool state, string userId);
         Task<LinkDTO> CreateShortLinkFromFullUrl(LinkDTO modelDTO, string userId);
         LinkDTO GetURLsForCurrentUser(string userId);
         string IdToShortURL(int n);
