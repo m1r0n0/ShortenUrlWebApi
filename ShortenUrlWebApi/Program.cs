@@ -23,7 +23,7 @@ builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationContext>()
     .AddDefaultTokenProviders();
 builder.Services.AddMvc();
-builder.Services.AddAutoMapper(typeof(AppMappingProfileForUrl));
+builder.Services.AddAutoMapper(typeof(AppMappingProfileForUrl), typeof(AppMappingProfileForUrlList));
 builder.Services.AddScoped<IShortenService, ShortenService>();
 builder.Services.AddCors(options =>
 {

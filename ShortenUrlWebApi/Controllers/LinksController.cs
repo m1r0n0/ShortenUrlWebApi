@@ -29,11 +29,11 @@ namespace ShortenUrlWebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Url>> GetLinksForCurrentUser()
+        public ActionResult<UrlListDTO> GetLinksForCurrentUser()
         {
-            LinkDTO linkDTO = null;
-            linkDTO = _shortenService.GetURLsForCurrentUser(GetUserIdFromClaims());
-            return linkDTO.UrlList.ToList();
+            LinkDTO linkDTO = _shortenService.GetURLsForCurrentUser(GetUserIdFromClaims());          
+            UrlListDTO urlListDTO = _mapper.Map<UrlListDTO>(linkDTO);
+            return urlListDTO;
         }
 
         [HttpPut]
@@ -44,7 +44,7 @@ namespace ShortenUrlWebApi.Controllers
             return Ok(linkDTO);
         }
 
-        [Route("{id}&{state}")]
+        //[Route("{id}/{state}")]
         [HttpPost]
         [Authorize]
         public IActionResult ChangeLinkPrivacy(int id, bool state)
@@ -57,7 +57,7 @@ namespace ShortenUrlWebApi.Controllers
                 case "Unauthorized":
                     return Unauthorized();
                 case "NotFound":
-                    return NotFound();
+                    return NotFound();//exeptions
             }
             return BadRequest();
         }

@@ -59,7 +59,7 @@ namespace BusinessLayer.Services
             if (_context.UrlList != null)
             {
                 modelDTO.UrlList = _context.UrlList.Where(i => i.UserId == userId).ToList();
-                foreach (Url url in _context.UrlList)
+                foreach (Url url in modelDTO.UrlList)
                 {
                     url.ShortUrl = _configuration["shortenedBegining"] + url.ShortUrl;
                 }
