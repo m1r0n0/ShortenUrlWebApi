@@ -1,5 +1,5 @@
 ﻿using BusinessLayer.DTOs;
-using DataAccessLayer.Enums;
+using BusinessLayer.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;

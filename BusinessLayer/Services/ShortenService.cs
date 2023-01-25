@@ -1,7 +1,7 @@
 ﻿using BusinessLayer.DTOs;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Enums;
-using DataAccessLayer.Exeptions;
+using DataAccessLayer.Exceptions;
 using DataAccessLayer.Models;
 using Microsoft.Extensions.Configuration;
 

@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccessLayer.Exeptions
+namespace BusinessLayer.Exceptions
 {
-    public class UnauthorizedException : Exception
+    public class NotFoundException : Exception
     {
-        public UnauthorizedException()
+        public NotFoundException()
         {
+
         }
     }
 }
