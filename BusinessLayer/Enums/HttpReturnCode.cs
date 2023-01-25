@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccessLayer.Exceptions
+namespace BusinessLayer.Enums
 {
-    internal class UnauthorizedException
+    public enum HttpReturnCode
     {
+        Unauthorized,
+        NotFound,
+        Ok
     }
 }

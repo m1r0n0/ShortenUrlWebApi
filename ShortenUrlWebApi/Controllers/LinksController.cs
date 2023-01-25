@@ -6,7 +6,7 @@ using DataAccessLayer.Enums;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using DataAccessLayer.Exeptions;
+using DataAccessLayer.Exceptions;
 
 namespace ShortenUrlWebApi.Controllers
 {
@@ -70,15 +70,6 @@ namespace ShortenUrlWebApi.Controllers
             {
                 return BadRequest();
             }
-            /*switch (result)
-            {
-                case HttpReturnCode.Ok:
-                    
-                case "Unauthorized":
-                    
-                case "NotFound":
-                    return NotFound();
-            }*/
         }
     }
 }
