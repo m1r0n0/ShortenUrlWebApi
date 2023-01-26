@@ -2,11 +2,11 @@
 using BusinessLayer.DTOs;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
-using DataAccessLayer.Enums;
+using BusinessLayer.Enums;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using DataAccessLayer.Exceptions;
+using BusinessLayer.Exceptions;
 
 namespace ShortenUrlWebApi.Controllers
 {
