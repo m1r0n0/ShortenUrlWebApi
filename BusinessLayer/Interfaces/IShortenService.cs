@@ -12,6 +12,7 @@ namespace BusinessLayer.Interfaces
     {
         void ChangePrivacy(int id, bool state, string userId);
         Task<LinkDTO> CreateShortLinkFromFullUrl(LinkDTO modelDTO, string userId);
+        LinkDTO GetURLs();
         LinkDTO GetURLsForCurrentUser(string userId);
         string IdToShortURL(int n);
         int ShortURLToID(string shortUrl);

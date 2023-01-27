@@ -55,6 +55,20 @@ namespace BusinessLayer.Services
             return modelDTO;
         }
 
+        public LinkDTO GetURLs()
+        {
+            LinkDTO modelDTO = new();
+            if (_context.UrlList != null)
+            {
+                modelDTO.UrlList = _context.UrlList.ToList();
+                foreach (Url url in modelDTO.UrlList)
+                {
+                    url.ShortUrl = _configuration["shortenedBegining"] + url.ShortUrl;
+                }
+            }
+            return modelDTO;
+        }
+
         public LinkDTO GetURLsForCurrentUser(string userId)
         {
             LinkDTO modelDTO = new();
