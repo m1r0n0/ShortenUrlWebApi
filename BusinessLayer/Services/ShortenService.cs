@@ -1,7 +1,7 @@
-﻿using BusinessLayer.DTOs;
-using BusinessLayer.Interfaces;
-using BusinessLayer.Enums;
+﻿using AutoMapper;
+using BusinessLayer.DTOs;
 using BusinessLayer.Exceptions;
+using BusinessLayer.Interfaces;
 using DataAccessLayer.Models;
 using Microsoft.Extensions.Configuration;
 
@@ -11,11 +11,16 @@ namespace BusinessLayer.Services
     {
         private readonly IConfiguration _configuration;
         private readonly DataAccessLayer.Data.ApplicationContext _context;
+        private readonly IMapper _mapper;
 
-        public ShortenService(DataAccessLayer.Data.ApplicationContext context, IConfiguration configuration)
+        public ShortenService(
+            DataAccessLayer.Data.ApplicationContext context,
+            IConfiguration configuration,
+            IMapper mapper)
         {
             _context = context;
             _configuration = configuration;
+            _mapper = mapper;
         }
 
         public async Task<LinkDTO> CreateShortLinkFromFullUrl(LinkDTO modelDTO, string userId)
@@ -55,9 +60,11 @@ namespace BusinessLayer.Services
             return modelDTO;
         }
 
-        public LinkDTO GetURLs()
+        public UrlListDTO GetURLs()
         {
+            UrlListDTO tempList = new UrlListDTO();
             LinkDTO modelDTO = new();
+            LinkForMyLinks link = new LinkForMyLinks();
             if (_context.UrlList != null)
             {
                 modelDTO.UrlList = _context.UrlList.ToList();
@@ -65,8 +72,14 @@ namespace BusinessLayer.Services
                 {
                     url.ShortUrl = _configuration["shortenedBegining"] + url.ShortUrl;
                 }
+
+                for (int i = 0; i < _context.UrlList.Count(); i++)
+                {
+                    link = _mapper.Map<LinkForMyLinks>(modelDTO.UrlList.ElementAt(i));
+                    tempList.UrlList.Add(link);
+                }
             }
-            return modelDTO;
+            return tempList;
         }
 
         public LinkDTO GetURLsForCurrentUser(string userId)

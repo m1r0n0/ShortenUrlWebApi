@@ -33,9 +33,9 @@ namespace ShortenUrlWebApi.Controllers
         [HttpGet]
         public ActionResult<UrlListDTO> GetAllLinks()
         {
-            LinkDTO linkDTO = _shortenService.GetURLs();
-            UrlListDTO urlListDTO = _mapper.Map<UrlListDTO>(linkDTO);
-            return urlListDTO;
+            UrlListDTO linkDTO = _shortenService.GetURLs();
+            //UrlListDTO urlListDTO = _mapper.Map<UrlListDTO>(linkDTO);
+            return linkDTO;//urlListDTO;
         }
 
         [HttpGet]

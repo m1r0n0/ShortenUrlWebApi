@@ -9,6 +9,6 @@ namespace BusinessLayer.DTOs
 {
     public class UrlListDTO
     {
-        public IList<Url> UrlList { get; set; } = default!;
+        public IList<LinkForMyLinks> UrlList { get; set; } = default!;
     }
 }
