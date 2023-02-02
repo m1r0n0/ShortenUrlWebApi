@@ -98,29 +98,19 @@ namespace BusinessLayer.Services
 
         public string? IdToShortURL(int n)
         {
-            // Map to store 62 possible characters 
             char[] map = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToCharArray();
-
             string shorturl = "";
-
-            // Convert given integer id to a base 62 number 
             while (n > 0)
             {
-                // use above map to store actual character 
-                // in short url 
                 shorturl += (map[n % 62]);
                 n /= 62;
             }
-            // Reverse shortURL to complete base conversion 
             return new String(shorturl.ToCharArray().Reverse().ToArray()).ToString(); ;
         }
 
-        // Function to get integer ID back from a short url 
         public int ShortURLToID(string shortURL)
         {
-            int id = 0; // initialize result 
-
-            // A simple base conversion logic 
+            int id = 0;
             for (int i = 0; i < shortURL.Length; i++)
             {
                 if ('a' <= shortURL[i] &&
@@ -154,14 +144,11 @@ namespace BusinessLayer.Services
                             link.IsPrivate = true;
                         }
                         _context.SaveChanges();
-                        //return HttpReturnCode.Ok;
                     }
                 }
                 throw new UnauthorizedException();
-                //return HttpReturnCode.Unauthorized;
             }
             throw new NotFoundException();
-            //return HttpReturnCode.NotFound;
         }
     }
 }
