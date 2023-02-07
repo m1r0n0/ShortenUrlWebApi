@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ShortenUrlWebApi.Controllers;
+using BusinessLayer.Interfaces;
 
 namespace ShortenUrlWebApi.Controllers
 {
@@ -13,12 +14,18 @@ namespace ShortenUrlWebApi.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IAccountService _accountService;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IHttpContextAccessor httpContextAccessor)
-            : base(httpContextAccessor)
+        public AccountController(
+            UserManager<User> userManager, 
+            SignInManager<User> signInManager, 
+            IHttpContextAccessor httpContextAccessor,
+            IAccountService accountService
+            ) : base(httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _accountService = accountService;
         }
 
         [HttpPut]
@@ -67,6 +74,18 @@ namespace ShortenUrlWebApi.Controllers
         {
             await _signInManager.SignOutAsync();
             return Ok();
+        }
+
+        [HttpGet]
+        public bool IsLogon()
+        {
+            return User.Identity.IsAuthenticated;
+        }
+
+        [HttpGet]
+        public string GetUserEmail()
+        {
+            return _accountService.GetUserEmailUsingUserId(GetUserIdFromClaims());
         }
     }
 }

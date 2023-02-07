@@ -4,9 +4,7 @@ using DataAccessLayer.Data;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ShortenUrlWebApi.Controllers;
 using ShortenUrlWebApi.MappingProfiles;
-using System.Text;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -25,17 +23,20 @@ builder.Services.AddIdentity<User, IdentityRole>()
 builder.Services.AddMvc();
 builder.Services.AddAutoMapper(typeof(AppMappingProfileForUrl), typeof(AppMappingProfileForUrlList), typeof(AppMappingProfileForLinkForMyLinks));
 builder.Services.AddScoped<IShortenService, ShortenService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.AllowAnyOrigin()
-                          /*policy.withorigins("http://example.com",
+                          policy
+                          /*policy.WithOrigins("http://example.com",
                                               "http://www.contoso.com",
                                               "https://localhost:7138",
-                                              "https://localhost:5000")*/
-                          .AllowAnyMethod();
+                                              "https://localhost:3000")*/
+                          .AllowAnyMethod()
+                          .AllowAnyOrigin()
+                          .AllowAnyHeader();
                       });
 });
 

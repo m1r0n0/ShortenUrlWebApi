@@ -28,6 +28,10 @@ namespace BusinessLayer.Services
             string _shortened = string.Empty;
             bool _isThereSimilar = false;
             modelDTO.UserId = userId;
+            if (userId == null)
+            {
+                modelDTO.UserId = "";
+            }
             while (true)
             {
                 var appropriateShortLink = _context.UrlList.Where(x => x.ShortUrl.Equals(_shortened)).FirstOrDefault();

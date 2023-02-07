@@ -12,13 +12,13 @@ namespace ShortenUrlWebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class LinksController : AppController
+    public class ShortenController : AppController
     {
         private readonly ApplicationContext _context;
         private readonly IShortenService _shortenService;
         private readonly IMapper _mapper;
 
-        public LinksController(IHttpContextAccessor httpContextAccessor,
+        public ShortenController(IHttpContextAccessor httpContextAccessor,
             ApplicationContext context,
             IShortenService shortenService,
             IMapper mapper)
@@ -34,8 +34,7 @@ namespace ShortenUrlWebApi.Controllers
         public ActionResult<UrlListDTO> GetAllLinks()
         {
             UrlListDTO linkDTO = _shortenService.GetURLs();
-            //UrlListDTO urlListDTO = _mapper.Map<UrlListDTO>(linkDTO);
-            return linkDTO;//urlListDTO;
+            return linkDTO;
         }
 
         [HttpGet]
