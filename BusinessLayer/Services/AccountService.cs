@@ -1,4 +1,5 @@
-﻿using BusinessLayer.Interfaces;
+﻿using BusinessLayer.DTOs;
+using BusinessLayer.Interfaces;
 
 namespace BusinessLayer.Services
 {
@@ -9,14 +10,15 @@ namespace BusinessLayer.Services
         {
             _context = context;
         }
-        public string GetUserEmailUsingUserId(string userId)
+        public UserLoginInfoDTO GetUserEmailAndLoginStatus(string userId, bool isLogon)
         {
-            string userEmail = _context.UserList?.Where(item => item.Id == userId).FirstOrDefault().ToString();
-            if (userEmail == null)
+            UserLoginInfoDTO userLoginInfoDTO = new(isLogon);
+            userLoginInfoDTO.UserEmail = _context.UserList?.Where(item => item.Id == userId)?.FirstOrDefault()?.ToString();
+            if (userLoginInfoDTO.UserEmail == null)
             {
-                userEmail = "";
+                userLoginInfoDTO.UserEmail = "";
             }
-            return userEmail;
+            return userLoginInfoDTO;
         }
     }
 }

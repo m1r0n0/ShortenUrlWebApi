@@ -1,10 +1,9 @@
 ﻿using BusinessLayer.DTOs;
+using BusinessLayer.Interfaces;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ShortenUrlWebApi.Controllers;
-using BusinessLayer.Interfaces;
 
 namespace ShortenUrlWebApi.Controllers
 {
@@ -17,8 +16,8 @@ namespace ShortenUrlWebApi.Controllers
         private readonly IAccountService _accountService;
 
         public AccountController(
-            UserManager<User> userManager, 
-            SignInManager<User> signInManager, 
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
             IHttpContextAccessor httpContextAccessor,
             IAccountService accountService
             ) : base(httpContextAccessor)
@@ -77,15 +76,9 @@ namespace ShortenUrlWebApi.Controllers
         }
 
         [HttpGet]
-        public bool IsLogon()
+        public UserLoginInfoDTO GetLogonUserInfo()
         {
-            return User.Identity.IsAuthenticated;
-        }
-
-        [HttpGet]
-        public string GetUserEmail()
-        {
-            return _accountService.GetUserEmailUsingUserId(GetUserIdFromClaims());
+            return _accountService.GetUserEmailAndLoginStatus(GetUserIdFromClaims(), User.Identity.IsAuthenticated);
         }
     }
 }

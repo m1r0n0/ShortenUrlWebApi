@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BusinessLayer.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace BusinessLayer.Interfaces
 {
     public interface IAccountService
     {
-        string GetUserEmailUsingUserId(string userId);
+        UserLoginInfoDTO GetUserEmailAndLoginStatus(string userId, bool isLogon);
     }
 }
