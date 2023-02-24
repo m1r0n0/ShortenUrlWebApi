@@ -11,9 +11,9 @@ namespace BusinessLayer.Interfaces
     public interface IShortenService
     {
         void ChangePrivacy(int id, bool state, string userId);
-        Task<LinkDTO> CreateShortLinkFromFullUrl(LinkDTO modelDTO, string userId);
+        Task<LinkDTO> CreateShortLinkFromFullUrl(LinkDTO modelDTO);
         UrlListDTO GetURLs();
-        LinkDTO GetURLsForCurrentUser(string userId);
+        UrlListDTO GetURLsForCurrentUser(string userId);
         string IdToShortURL(int n);
         int ShortURLToID(string shortUrl);
     }

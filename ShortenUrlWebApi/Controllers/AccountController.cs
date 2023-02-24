@@ -51,11 +51,11 @@ namespace ShortenUrlWebApi.Controllers
         }
 
         [HttpPost]
+        [Produces("application/json")]
         public async Task<IActionResult> Login([FromBody] UserDTO model)
         {
             var result =
                 await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-            //System.Diagnostics.Debugger.Break();
             if (result.Succeeded)
             {
                 return Ok(model);
@@ -76,9 +76,15 @@ namespace ShortenUrlWebApi.Controllers
         }
 
         [HttpGet]
-        public UserLoginInfoDTO GetLogonUserInfo()
+        public UserEmailIdDTO GetUserID(string userEmail)
         {
-            return _accountService.GetUserEmailAndLoginStatus(GetUserIdFromClaims(), User.Identity.IsAuthenticated);
+            return _accountService.GetUserIDFromUserEmail(userEmail);
+        }
+
+        [HttpGet]
+        public UserEmailIdDTO GetUserEmail(string userID)
+        {
+            return _accountService.GetUserEmailFromUserID(userID);
         }
     }
 }

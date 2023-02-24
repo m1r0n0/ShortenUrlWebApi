@@ -38,18 +38,20 @@ namespace ShortenUrlWebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<UrlListDTO> GetLinksForCurrentUser()
+        public ActionResult<UrlListDTO> GetLinksForCurrentUser(string userID)
         {
-            LinkDTO linkDTO = _shortenService.GetURLsForCurrentUser(GetUserIdFromClaims());          
+            /*LinkDTO linkDTO = _shortenService.GetURLsForCurrentUser(GetUserIdFromClaims());          
             UrlListDTO urlListDTO = _mapper.Map<UrlListDTO>(linkDTO);
-            return urlListDTO;
+            return urlListDTO;*/
+            UrlListDTO linkDTO = _shortenService.GetURLsForCurrentUser(userID);
+            return linkDTO;
         }
 
         [HttpPut]
         public async Task<ActionResult<Url>> CreateLink(Url url)
         {
             LinkDTO linkDTO = _mapper.Map<LinkDTO>(url);
-            linkDTO = await _shortenService.CreateShortLinkFromFullUrl(linkDTO, GetUserIdFromClaims());
+            linkDTO = await _shortenService.CreateShortLinkFromFullUrl(linkDTO);
             return Ok(linkDTO);
         }
 

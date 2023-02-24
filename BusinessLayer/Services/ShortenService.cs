@@ -23,12 +23,11 @@ namespace BusinessLayer.Services
             _mapper = mapper;
         }
 
-        public async Task<LinkDTO> CreateShortLinkFromFullUrl(LinkDTO modelDTO, string userId)
+        public async Task<LinkDTO> CreateShortLinkFromFullUrl(LinkDTO modelDTO)
         {
             string _shortened = string.Empty;
             bool _isThereSimilar = false;
-            modelDTO.UserId = userId;
-            if (userId == null)
+            if (modelDTO.UserId == null)
             {
                 modelDTO.UserId = "";
             }
@@ -86,9 +85,11 @@ namespace BusinessLayer.Services
             return tempList;
         }
 
-        public LinkDTO GetURLsForCurrentUser(string userId)
+        public UrlListDTO GetURLsForCurrentUser(string userId)
         {
+            UrlListDTO tempList = new UrlListDTO();
             LinkDTO modelDTO = new();
+            LinkForMyLinks link = new LinkForMyLinks();
             if (_context.UrlList != null)
             {
                 modelDTO.UrlList = _context.UrlList.Where(i => i.UserId == userId).ToList();
@@ -96,8 +97,14 @@ namespace BusinessLayer.Services
                 {
                     url.ShortUrl = _configuration["shortenedBegining"] + url.ShortUrl;
                 }
+
+                for (int i = 0; i < modelDTO.UrlList.Count(); i++)
+                {
+                    link = _mapper.Map<LinkForMyLinks>(modelDTO.UrlList.ElementAt(i));
+                    tempList.UrlList.Add(link);
+                }
             }
-            return modelDTO;
+            return tempList;
         }
 
         public string? IdToShortURL(int n)

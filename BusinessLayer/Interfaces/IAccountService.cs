@@ -9,6 +9,7 @@ namespace BusinessLayer.Interfaces
 {
     public interface IAccountService
     {
-        UserLoginInfoDTO GetUserEmailAndLoginStatus(string userId, bool isLogon);
+        UserEmailIdDTO GetUserIDFromUserEmail(string userEmail);
+        UserEmailIdDTO GetUserEmailFromUserID(string userID);
     }
 }

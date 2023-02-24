@@ -10,15 +10,36 @@ namespace BusinessLayer.Services
         {
             _context = context;
         }
-        public UserLoginInfoDTO GetUserEmailAndLoginStatus(string userId, bool isLogon)
+        public UserEmailIdDTO GetUserIDFromUserEmail(string userEmail)
         {
-            UserLoginInfoDTO userLoginInfoDTO = new(isLogon);
-            userLoginInfoDTO.UserEmail = _context.UserList?.Where(item => item.Id == userId)?.FirstOrDefault()?.ToString();
-            if (userLoginInfoDTO.UserEmail == null)
+            UserEmailIdDTO userEmailIdDTO = new();
+            userEmailIdDTO.UserEmail = userEmail;
+            var tempUserEmailToIdDTO = _context.UserList?.Where(item => item.Email == userEmail)?.FirstOrDefault();
+            if (tempUserEmailToIdDTO == null)
             {
-                userLoginInfoDTO.UserEmail = "";
+                userEmailIdDTO.UserID = "";
             }
-            return userLoginInfoDTO;
+            else
+            { 
+                userEmailIdDTO.UserID = tempUserEmailToIdDTO.Id; 
+            }
+            return userEmailIdDTO;
+        }
+
+        public UserEmailIdDTO GetUserEmailFromUserID(string userId)
+        {
+            UserEmailIdDTO userEmailIdDTO = new();
+            userEmailIdDTO.UserID = userId;
+            var tempUserEmailToIdDTO = _context.UserList?.Where(item => item.Id == userId)?.FirstOrDefault();
+            if (tempUserEmailToIdDTO == null)
+            {
+                userEmailIdDTO.UserEmail = "";
+            }
+            else
+            {
+                userEmailIdDTO.UserEmail = tempUserEmailToIdDTO.Email;
+            }
+            return userEmailIdDTO;
         }
     }
 }
