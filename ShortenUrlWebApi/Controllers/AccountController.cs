@@ -86,5 +86,13 @@ namespace ShortenUrlWebApi.Controllers
         {
             return _accountService.GetUserEmailFromUserID(userID);
         }
+
+        [HttpGet]
+        public CheckExistingEmailDTO CheckEmailExisting(string email)
+        {
+            CheckExistingEmailDTO model = new(email);
+            model.IsExist = _accountService.CheckGivenEmailForExistingInDB(email);
+            return model;
+        }
     }
 }

@@ -20,8 +20,8 @@ namespace BusinessLayer.Services
                 userEmailIdDTO.UserID = "";
             }
             else
-            { 
-                userEmailIdDTO.UserID = tempUserEmailToIdDTO.Id; 
+            {
+                userEmailIdDTO.UserID = tempUserEmailToIdDTO.Id;
             }
             return userEmailIdDTO;
         }
@@ -40,6 +40,19 @@ namespace BusinessLayer.Services
                 userEmailIdDTO.UserEmail = tempUserEmailToIdDTO.Email;
             }
             return userEmailIdDTO;
+        }
+
+        public bool CheckGivenEmailForExistingInDB(string email)
+        {
+            var tempModel = _context.UserList?.Where(item => item.Email == email).FirstOrDefault();
+            if (tempModel == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }
