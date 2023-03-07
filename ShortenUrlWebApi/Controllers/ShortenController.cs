@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using BusinessLayer.DTOs;
+using BusinessLayer.Exceptions;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
-using BusinessLayer.Enums;
 using DataAccessLayer.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using BusinessLayer.Exceptions;
 
 namespace ShortenUrlWebApi.Controllers
 {
@@ -40,9 +38,6 @@ namespace ShortenUrlWebApi.Controllers
         [HttpGet]
         public ActionResult<UrlListDTO> GetLinksForCurrentUser(string userID)
         {
-            /*LinkDTO linkDTO = _shortenService.GetURLsForCurrentUser(GetUserIdFromClaims());          
-            UrlListDTO urlListDTO = _mapper.Map<UrlListDTO>(linkDTO);
-            return urlListDTO;*/
             UrlListDTO linkDTO = _shortenService.GetURLsForCurrentUser(userID);
             return linkDTO;
         }
@@ -56,15 +51,14 @@ namespace ShortenUrlWebApi.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult ChangeLinkPrivacy(int id, bool state)
+        public IActionResult ChangeLinkPrivacy(string shortUrl, bool state, string userID)
         {
             try
             {
-                _shortenService.ChangePrivacy(id, state, GetUserIdFromClaims());
+                _shortenService.ChangePrivacy(shortUrl, state, userID);
                 return Ok();
             }
             catch (UnauthorizedException)

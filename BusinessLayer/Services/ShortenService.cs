@@ -137,9 +137,9 @@ namespace BusinessLayer.Services
             return id;
         }
 
-        public void ChangePrivacy(int id, bool state, string userId)
+        public void ChangePrivacy(string shortUrl, bool state, string userId)
         {
-            var link = _context.UrlList.Where(x => x.Id == id).FirstOrDefault();
+            var link = _context.UrlList.Where(x => x.ShortUrl == shortUrl).FirstOrDefault();
             if (link != null)
             {
                 if (link.UserId != String.Empty)
@@ -157,9 +157,10 @@ namespace BusinessLayer.Services
                         _context.SaveChanges();
                     }
                 }
-                throw new UnauthorizedException();
+                else throw new UnauthorizedException();
+
             }
-            throw new NotFoundException();
+            else throw new NotFoundException();
         }
     }
 }
