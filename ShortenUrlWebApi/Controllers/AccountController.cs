@@ -67,14 +67,6 @@ namespace ShortenUrlWebApi.Controllers
             return BadRequest(model);
         }
 
-        [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return Ok();
-        }
-
         [HttpGet]
         public UserEmailIdDTO GetUserID(string userEmail)
         {

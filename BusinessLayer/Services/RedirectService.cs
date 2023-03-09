@@ -1,8 +1,8 @@
-﻿using BusinessLayer.Interfaces;
+﻿using BusinessLayer.DTOs;
+using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using System.Security.Claims;
 
 namespace BusinessLayer.Services
 {
@@ -11,64 +11,72 @@ namespace BusinessLayer.Services
         private readonly IShortenService _shortenService;
         private readonly ApplicationContext _context;
         private readonly IConfiguration _configuration;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public RedirectService(IShortenService shortenService, ApplicationContext applicationContext, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _shortenService = shortenService;
             _context = applicationContext;
             _configuration = configuration;
-            _httpContextAccessor = httpContextAccessor;
         }
-        public string GetLinkToRedirect(string shortUrl, string userName)
+        public RedirectLinkDTO GetFullUrlToRedirect(string shortUrl, string userId)
         {
-            string _fullUrl = string.Empty;
+            RedirectLinkDTO model = new(shortUrl);
             string _checkHttp = string.Empty;
+            int _id = _shortenService.ShortURLToID(shortUrl);
+            var _url = _context.UrlList.Where(x => x.Id.Equals(_id)).FirstOrDefault();
+
             if (shortUrl != null)
             {
-                int _id = _shortenService.ShortURLToID(shortUrl);
-                var _url = _context.UrlList.Where(x => x.Id.Equals(_id)).FirstOrDefault();
+                GetFullUrlFromShorten();
+                PrepareFullUrlToRedirectInWWW();
+            }
+            else
+            {
+                model.FullUrl = "https://shorturl.com" + _configuration["port"] + "/";
+            }
+            return model;
 
+
+            void GetFullUrlFromShorten()
+            {
                 if (_url != null)
                 {
                     if (_url.IsPrivate)
                     {
-                        if (_url.UserId == _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value)
+                        if (_url.UserId == userId)
                         {
-                            _fullUrl = _url.FullUrl;
+                            model.FullUrl = _url.FullUrl;
                         }
                         else
                         {
-                            _fullUrl = "https://shorturl.com" + _configuration["port"] + "/Errors/PageNotFoundError";
+                            model.FullUrl = "https://shorturl.com" + _configuration["port"] + "/Error/Unauthorized";
                         }
                     }
                     else
                     {
-                        _fullUrl = _url.FullUrl;
+                        model.FullUrl = _url.FullUrl;
                     }
                 }
                 else
                 {
-                    _fullUrl = "https://shorturl.com" + _configuration["port"] + "/Errors/PageNotFoundError";
+                    model.FullUrl = "https://shorturl.com" + _configuration["port"] + "/Error/NotFound";
                 }
+            }
 
-                if (_fullUrl != string.Empty)
+            void PrepareFullUrlToRedirectInWWW()
+            {
+                if (model.FullUrl != string.Empty)
                 {
                     for (int i = 0; i < 7; i++)
                     {
-                        _checkHttp += _fullUrl[i];
+                        _checkHttp += model.FullUrl[i];
                     }
                     if ((_checkHttp != "http://") && (_checkHttp != "https:/"))
                     {
-                        _fullUrl = "https://" + _fullUrl;
+                        model.FullUrl = "https://" + model.FullUrl;
                     }
                 }
-                return _fullUrl;
             }
-            else
-            {
-                return "https://shorturl.com" + _configuration["port"] + "/Home/Index";
-            }
-        }       
+        }
     }
 }
