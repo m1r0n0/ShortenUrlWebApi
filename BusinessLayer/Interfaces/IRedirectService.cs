@@ -4,6 +4,6 @@ namespace BusinessLayer.Interfaces
 {
     public interface IRedirectService
     {
-        RedirectLinkDTO GetFullUrlToRedirect(string shortUrl, string userId);
+        string GetFullUrlToRedirect(string shortUrl, string userId);
     }
 }

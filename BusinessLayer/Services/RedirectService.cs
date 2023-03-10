@@ -1,5 +1,4 @@
-﻿using BusinessLayer.DTOs;
-using BusinessLayer.Interfaces;
+﻿using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -18,12 +17,12 @@ namespace BusinessLayer.Services
             _context = applicationContext;
             _configuration = configuration;
         }
-        public RedirectLinkDTO GetFullUrlToRedirect(string shortUrl, string userId)
+        public string GetFullUrlToRedirect(string shortUrl, string userId)
         {
-            RedirectLinkDTO model = new(shortUrl);
-            string _checkHttp = string.Empty;
-            int _id = _shortenService.ShortURLToID(shortUrl);
-            var _url = _context.UrlList.Where(x => x.Id.Equals(_id)).FirstOrDefault();
+            string fullUrl = string.Empty;
+            string checkHttp = string.Empty;
+            int id = _shortenService.ShortURLToID(shortUrl);
+            var url = _context.UrlList.Where(x => x.Id.Equals(id)).FirstOrDefault();
 
             if (shortUrl != null)
             {
@@ -32,49 +31,43 @@ namespace BusinessLayer.Services
             }
             else
             {
-                model.FullUrl = "https://shorturl.com" + _configuration["port"] + "/";
+                fullUrl = "shorturl.com" + _configuration["port"] + "/";
             }
-            return model;
+            return fullUrl;
 
 
             void GetFullUrlFromShorten()
             {
-                if (_url != null)
+                if (url != null)
                 {
-                    if (_url.IsPrivate)
+                    if (url.IsPrivate)
                     {
-                        if (_url.UserId == userId)
+                        if (url.UserId == userId)
                         {
-                            model.FullUrl = _url.FullUrl;
+                            fullUrl = url.FullUrl;
                         }
                         else
                         {
-                            model.FullUrl = "https://shorturl.com" + _configuration["port"] + "/Error/Unauthorized";
+                            fullUrl = "http://shorturl.com" + _configuration["port"] + "/Error/Unauthorized";
                         }
                     }
                     else
                     {
-                        model.FullUrl = _url.FullUrl;
+                        fullUrl = url.FullUrl;
                     }
                 }
                 else
                 {
-                    model.FullUrl = "https://shorturl.com" + _configuration["port"] + "/Error/NotFound";
+                    fullUrl = "http://shorturl.com" + _configuration["port"] + "/Error/NotFound";
                 }
             }
 
             void PrepareFullUrlToRedirectInWWW()
             {
-                if (model.FullUrl != string.Empty)
+
+                if (fullUrl != string.Empty)
                 {
-                    for (int i = 0; i < 7; i++)
-                    {
-                        _checkHttp += model.FullUrl[i];
-                    }
-                    if ((_checkHttp != "http://") && (_checkHttp != "https:/"))
-                    {
-                        model.FullUrl = "https://" + model.FullUrl;
-                    }
+                    if (!(fullUrl.StartsWith("http://") || fullUrl.StartsWith("https://"))) fullUrl = "https://" + fullUrl;
                 }
             }
         }
