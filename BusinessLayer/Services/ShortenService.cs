@@ -59,30 +59,8 @@ namespace BusinessLayer.Services
             await _context.SaveChangesAsync();
             urlObj.ShortUrl = IdToShortURL(urlObj.Id);
             await _context.SaveChangesAsync();
-            modelDTO.ShortUrl = _configuration["shortenedBegining"] + urlObj.ShortUrl;
+            modelDTO.ShortUrl = _configuration["shortenedBegining"] + "/" + urlObj.ShortUrl;
             return modelDTO;
-        }
-
-        public UrlListDTO GetURLs()
-        {
-            UrlListDTO tempList = new UrlListDTO();
-            LinkDTO modelDTO = new();
-            LinkForMyLinks link = new LinkForMyLinks();
-            if (_context.UrlList != null)
-            {
-                modelDTO.UrlList = _context.UrlList.ToList();
-                foreach (Url url in modelDTO.UrlList)
-                {
-                    url.ShortUrl = _configuration["shortenedBegining"] + url.ShortUrl;
-                }
-
-                for (int i = 0; i < _context.UrlList.Count(); i++)
-                {
-                    link = _mapper.Map<LinkForMyLinks>(modelDTO.UrlList.ElementAt(i));
-                    tempList.UrlList.Add(link);
-                }
-            }
-            return tempList;
         }
 
         public UrlListDTO GetURLsForCurrentUser(string userId)
@@ -95,7 +73,7 @@ namespace BusinessLayer.Services
                 modelDTO.UrlList = _context.UrlList.Where(i => i.UserId == userId).ToList();
                 foreach (Url url in modelDTO.UrlList)
                 {
-                    url.ShortUrl = _configuration["shortenedBegining"] + url.ShortUrl;
+                    url.ShortUrl = _configuration["shortenedBegining"] + "/" + url.ShortUrl;
                 }
 
                 for (int i = 0; i < modelDTO.UrlList.Count(); i++)

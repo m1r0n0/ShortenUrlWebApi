@@ -31,7 +31,7 @@ namespace BusinessLayer.Services
             }
             else
             {
-                fullUrl = "shorturl.com" + _configuration["port"] + "/";
+                fullUrl = _configuration["shortenedBegining"] + _configuration["port"] + "/";
             }
             return fullUrl;
 
@@ -48,7 +48,7 @@ namespace BusinessLayer.Services
                         }
                         else
                         {
-                            fullUrl = "http://shorturl.com" + _configuration["port"] + "/Error/Unauthorized";
+                            fullUrl = _configuration["shortenedBegining"] + _configuration["port"] + "/Unauthorized";
                         }
                     }
                     else
@@ -58,7 +58,7 @@ namespace BusinessLayer.Services
                 }
                 else
                 {
-                    fullUrl = "http://shorturl.com" + _configuration["port"] + "/Error/NotFound";
+                    fullUrl = _configuration["shortenedBegining"] + _configuration["port"] + "/NotFound";
                 }
             }
 
