@@ -12,5 +12,6 @@ namespace BusinessLayer.Interfaces
         UserEmailIdDTO GetUserIDFromUserEmail(string userEmail);
         UserEmailIdDTO GetUserEmailFromUserID(string userID);
         bool CheckGivenEmailForExistingInDB(string email);
+        UserEmailIdDTO setNewUserEmail(string newUserEmail, string userID);
     }
 }

@@ -2,9 +2,14 @@
 {
     public class UserEmailIdDTO
     {
-        public string? UserEmail { get; set; } = string.Empty;
-        public string UserID { get; set; } = string.Empty;
+        public string? NewEmail { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
 
+        public UserEmailIdDTO(string userId)
+        {
+            UserId = userId;
+        }
 
+        public UserEmailIdDTO() { }
     }
 }

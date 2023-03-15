@@ -13,15 +13,15 @@ namespace BusinessLayer.Services
         public UserEmailIdDTO GetUserIDFromUserEmail(string userEmail)
         {
             UserEmailIdDTO userEmailIdDTO = new();
-            userEmailIdDTO.UserEmail = userEmail;
+            userEmailIdDTO.NewEmail = userEmail;
             var tempUserEmailToIdDTO = _context.UserList?.Where(item => item.Email == userEmail)?.FirstOrDefault();
             if (tempUserEmailToIdDTO == null)
             {
-                userEmailIdDTO.UserID = "";
+                userEmailIdDTO.UserId = "";
             }
             else
             {
-                userEmailIdDTO.UserID = tempUserEmailToIdDTO.Id;
+                userEmailIdDTO.UserId = tempUserEmailToIdDTO.Id;
             }
             return userEmailIdDTO;
         }
@@ -29,15 +29,15 @@ namespace BusinessLayer.Services
         public UserEmailIdDTO GetUserEmailFromUserID(string userId)
         {
             UserEmailIdDTO userEmailIdDTO = new();
-            userEmailIdDTO.UserID = userId;
+            userEmailIdDTO.UserId = userId;
             var tempUserEmailToIdDTO = _context.UserList?.Where(item => item.Id == userId)?.FirstOrDefault();
             if (tempUserEmailToIdDTO == null)
             {
-                userEmailIdDTO.UserEmail = "";
+                userEmailIdDTO.NewEmail = "";
             }
             else
             {
-                userEmailIdDTO.UserEmail = tempUserEmailToIdDTO.Email;
+                userEmailIdDTO.NewEmail = tempUserEmailToIdDTO.Email;
             }
             return userEmailIdDTO;
         }
@@ -52,6 +52,32 @@ namespace BusinessLayer.Services
             else
             {
                 return true;
+            }
+        }
+
+        public UserEmailIdDTO setNewUserEmail(string newUserEmail, string userID)
+        {
+            UserEmailIdDTO userEmailIdDTO = new(userID);
+            var userToPatch = _context.UserList?.Where(user => user.Id == userID).FirstOrDefault();
+            var probablyExistingUser = _context.UserList?.Where(user => user.Email == newUserEmail).FirstOrDefault();
+            if (probablyExistingUser == null)
+            {
+                updateUserInDB();
+                userEmailIdDTO.NewEmail = newUserEmail;
+            }
+            else
+            {
+                userEmailIdDTO.NewEmail = null;
+            }
+            return userEmailIdDTO;
+
+            void updateUserInDB()
+            {
+                userToPatch.Email = newUserEmail;
+                userToPatch.NormalizedEmail = newUserEmail.ToUpper();
+                userToPatch.UserName = newUserEmail;
+                userToPatch.NormalizedUserName = newUserEmail.ToUpper();
+                _context.SaveChanges();
             }
         }
     }

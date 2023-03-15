@@ -1,7 +1,6 @@
 ﻿using BusinessLayer.DTOs;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -82,9 +81,13 @@ namespace ShortenUrlWebApi.Controllers
         [HttpGet]
         public CheckExistingEmailDTO CheckEmailExisting(string email)
         {
-            CheckExistingEmailDTO model = new(email);
-            model.IsExist = _accountService.CheckGivenEmailForExistingInDB(email);
-            return model;
+            return new(email, _accountService.CheckGivenEmailForExistingInDB(email));
+        }
+
+        [HttpPatch]
+        public UserEmailIdDTO ChangeUserEmail(UserEmailIdDTO model)
+        {
+            return _accountService.setNewUserEmail(model.NewEmail, model.UserId);
         }
     }
 }
