@@ -1,4 +1,5 @@
 ﻿using BusinessLayer.DTOs;
+using DataAccessLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,6 @@ namespace BusinessLayer.Interfaces
         UserEmailIdDTO GetUserEmailFromUserID(string userID);
         bool CheckGivenEmailForExistingInDB(string email);
         UserEmailIdDTO setNewUserEmail(string newUserEmail, string userID);
+        User? GetUserById(string Id);
     }
 }

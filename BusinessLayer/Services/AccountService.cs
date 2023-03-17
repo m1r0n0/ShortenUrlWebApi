@@ -1,5 +1,6 @@
 ﻿using BusinessLayer.DTOs;
 using BusinessLayer.Interfaces;
+using DataAccessLayer.Models;
 
 namespace BusinessLayer.Services
 {
@@ -77,8 +78,16 @@ namespace BusinessLayer.Services
                 userToPatch.NormalizedEmail = newUserEmail.ToUpper();
                 userToPatch.UserName = newUserEmail;
                 userToPatch.NormalizedUserName = newUserEmail.ToUpper();
+
+                userToPatch = null;
+
                 _context.SaveChanges();
             }
+        }
+
+        public User? GetUserById(string Id)
+        {
+            return _context.UserList?.Where(user => user.Id == Id).FirstOrDefault();
         }
     }
 }

@@ -89,5 +89,16 @@ namespace ShortenUrlWebApi.Controllers
         {
             return _accountService.setNewUserEmail(model.NewEmail, model.UserId);
         }
+
+        [HttpPatch]
+        public UserPasswordIdDTO ChangeUserPassword(UserPasswordIdDTO model)
+        {
+            User user = _accountService.GetUserById(model.UserId);
+
+            var token = _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var result = _userManager.ResetPasswordAsync(user, token.ToString, model.NewPassword);
+            //return _accountService.setNewUserEmail(model.NewEmail, model.UserId);
+        }
     }
 }
