@@ -91,14 +91,21 @@ namespace ShortenUrlWebApi.Controllers
         }
 
         [HttpPatch]
-        public UserPasswordIdDTO ChangeUserPassword(UserPasswordIdDTO model)
+        public async Task<IActionResult> ChangeUserPassword(UserPasswordIdDTO model)
         {
             User user = _accountService.GetUserById(model.UserId);
 
-            var token = _userManager.GeneratePasswordResetTokenAsync(user);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            var result = _userManager.ResetPasswordAsync(user, token.ToString, model.NewPassword);
-            //return _accountService.setNewUserEmail(model.NewEmail, model.UserId);
+            var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+            if (result.Succeeded)
+            {
+                return Ok(model);
+            }
+            else
+            {
+                return BadRequest(model);
+            };
         }
     }
 }
