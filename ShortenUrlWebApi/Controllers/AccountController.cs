@@ -35,6 +35,8 @@ namespace ShortenUrlWebApi.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    UserEmailIdDTO emailIdDTO = _accountService.GetUserIDFromUserEmail(model.Email);
+                    model.UserId = emailIdDTO.UserId;
                     await _signInManager.SignInAsync(user, false);
                     return Ok(model);
                 }
@@ -57,6 +59,8 @@ namespace ShortenUrlWebApi.Controllers
                 await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
             if (result.Succeeded)
             {
+                UserEmailIdDTO emailIdDTO = _accountService.GetUserIDFromUserEmail(model.Email);
+                model.UserId = emailIdDTO.UserId;
                 return Ok(model);
             }
             else
