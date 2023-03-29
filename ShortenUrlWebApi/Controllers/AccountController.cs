@@ -31,6 +31,10 @@ namespace ShortenUrlWebApi.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (_accountService.CheckGivenEmailForExistingInDB(model.Email))
+                {
+                    return Conflict(model);
+                }
                 User user = new User { Email = model.Email, UserName = model.Email, Year = model.Year };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
