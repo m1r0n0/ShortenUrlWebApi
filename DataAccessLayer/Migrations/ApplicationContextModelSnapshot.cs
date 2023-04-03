@@ -54,7 +54,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("UserId", "ShortUrl");
 
-                    b.ToTable("UrlList");
+                    b.ToTable("UrlList", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.User", b =>

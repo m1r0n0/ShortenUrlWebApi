@@ -8,7 +8,7 @@ namespace DataAccessLayer.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            /*migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -46,9 +46,9 @@ namespace DataAccessLayer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });*/
+                });
 
-            /*migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable(
                 name: "UrlList",
                 columns: table => new
                 {
@@ -63,9 +63,9 @@ namespace DataAccessLayer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UrlList", x => x.Id);
-                });*/
+                });
 
-            /*migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -169,9 +169,9 @@ namespace DataAccessLayer.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });*/
+                });
 
-            /*migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
@@ -223,34 +223,34 @@ namespace DataAccessLayer.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_UrlList_UserId_ShortUrl",
                 table: "UrlList",
-                columns: new[] { "UserId", "ShortUrl" });*/
+                columns: new[] { "UserId", "ShortUrl" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            /* migrationBuilder.DropTable(
-                 name: "AspNetRoleClaims");
+            migrationBuilder.DropTable(
+                name: "AspNetRoleClaims");
 
-             migrationBuilder.DropTable(
-                 name: "AspNetUserClaims");
+            migrationBuilder.DropTable(
+                name: "AspNetUserClaims");
 
-             migrationBuilder.DropTable(
-                 name: "AspNetUserLogins");
+            migrationBuilder.DropTable(
+                name: "AspNetUserLogins");
 
-             migrationBuilder.DropTable(
-                 name: "AspNetUserRoles");
+            migrationBuilder.DropTable(
+                name: "AspNetUserRoles");
 
-             migrationBuilder.DropTable(
-                 name: "AspNetUserTokens");
+            migrationBuilder.DropTable(
+                name: "AspNetUserTokens");
 
-             migrationBuilder.DropTable(
-                 name: "UrlList");
+            migrationBuilder.DropTable(
+                name: "UrlList");
 
-             migrationBuilder.DropTable(
-                 name: "AspNetRoles");
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
 
-             migrationBuilder.DropTable(
-                 name: "AspNetUsers");*/
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

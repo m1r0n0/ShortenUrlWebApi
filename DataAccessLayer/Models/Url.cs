@@ -10,6 +10,5 @@ namespace DataAccessLayer.Models
         public string FullUrl { get; set; } = string.Empty;
         public string ShortUrl { get; set; } = string.Empty;
         public bool IsPrivate { get; set; }
-        public int newField { get; set; }
     }
 }
