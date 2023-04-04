@@ -9,7 +9,7 @@ namespace DataAccessLayer.Data
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
         {
-            //Database.EnsureCreated();
+            Database.EnsureCreated();
         }
         public DbSet<DataAccessLayer.Models.Url> UrlList { get; set; } = default!;
         public DbSet<DataAccessLayer.Models.User> UserList { get; set; } = default!;
