@@ -45,7 +45,7 @@ namespace BusinessLayer.Services
 
         public bool CheckGivenEmailForExistingInDB(string email)
         {
-            var tempModel = _context.UserList?.Where(item => item.Email == email).FirstOrDefault();
+            var tempModel = _context.UserList?.Any(item => item.Email == email).FirstOrDefault();
             if (tempModel == null)
             {
                 return false;
