@@ -31,21 +31,21 @@ namespace BusinessLayer.Services
         {
             UserEmailIdDTO userEmailIdDTO = new();
             userEmailIdDTO.UserId = userId;
-            var tempUserEmailToIdDTO = _context.UserList?.Where(item => item.Id == userId)?.FirstOrDefault();
-            if (tempUserEmailToIdDTO == null)
+            var tempUser = _context.UserList?.Where(item => item.Id == userId)?.FirstOrDefault();
+            if (tempUser == null)
             {
                 userEmailIdDTO.NewEmail = "";
             }
             else
             {
-                userEmailIdDTO.NewEmail = tempUserEmailToIdDTO.Email;
+                userEmailIdDTO.NewEmail = tempUser.Email;
             }
             return userEmailIdDTO;
         }
 
         public bool CheckGivenEmailForExistingInDB(string email)
         {
-            var tempModel = _context.UserList?.Any(item => item.Email == email).FirstOrDefault();
+            var tempModel = _context.UserList?.Any(item => item.Email == email);
             if (tempModel == null)
             {
                 return false;
