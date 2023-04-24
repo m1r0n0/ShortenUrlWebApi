@@ -45,15 +45,12 @@ namespace BusinessLayer.Services
 
         public bool CheckGivenEmailForExistingInDB(string email)
         {
-            var tempModel = _context.UserList?.Any(item => item.Email == email);
-            if (tempModel == null)
+            var isEmailExists = _context.UserList?.Any(item => item.Email == email);
+            if (isEmailExists == null)
             {
                 return false;
             }
-            else
-            {
-                return true;
-            }
+            return (bool)isEmailExists;
         }
 
         public UserEmailIdDTO setNewUserEmail(string newUserEmail, string userID)
