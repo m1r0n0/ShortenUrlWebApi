@@ -16,9 +16,9 @@ namespace ShortenUrlWebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult RedirectToOriginalUrl(string shortUrl, string? userId)
+        public async Task<IActionResult> RedirectToOriginalUrl(string shortUrl, string? userId)
         {
-            return Redirect(_redirectService.GetFullUrlToRedirect(shortUrl, userId));
+            return Redirect(await _redirectService.GetFullUrlToRedirect(shortUrl, userId));
         }
     }
 }
