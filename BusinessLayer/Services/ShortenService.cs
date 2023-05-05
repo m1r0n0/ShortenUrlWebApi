@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Exceptions;
+using BusinessLayer.Helpers;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using BusinessLayer.Helpers;
 
 namespace BusinessLayer.Services
 {
@@ -27,9 +27,9 @@ namespace BusinessLayer.Services
 
         public async Task<LinkDTO> CreateShortLinkFromFullUrl(LinkDTO modelDTO)
         {
-            Url? linkWithSimilarFullUrlFromThisUser = await _context.UrlList.Where(l => l.FullUrl == modelDTO.FullUrl && l.UserId == modelDTO.UserId ).FirstOrDefaultAsync();
+            Url? linkWithSimilarFullUrlFromThisUser = await _context.UrlList.Where(l => l.FullUrl == modelDTO.FullUrl && l.UserId == modelDTO.UserId).FirstOrDefaultAsync();
             bool isThereSimilarFullUrl = linkWithSimilarFullUrlFromThisUser is not null;
-            if (isThereSimilarFullUrl && !linkWithSimilarFullUrlFromThisUser!.IsPrivate)
+            if (isThereSimilarFullUrl)
             {
                 linkWithSimilarFullUrlFromThisUser.ShortUrl = ShortenHelper.AssembleShortUrl(linkWithSimilarFullUrlFromThisUser.ShortUrl, _configuration["shortenedBegining"]);
                 return _mapper.Map<LinkDTO>(linkWithSimilarFullUrlFromThisUser);
