@@ -5,6 +5,7 @@ using BusinessLayer.Interfaces;
 using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using BusinessLayer.Helpers;
 
 namespace BusinessLayer.Services
 {
@@ -26,12 +27,12 @@ namespace BusinessLayer.Services
 
         public async Task<LinkDTO> CreateShortLinkFromFullUrl(LinkDTO modelDTO)
         {
-            Url? linkWithSimilarFullUrl = await _context.UrlList.Where(l => l.FullUrl == modelDTO.FullUrl).FirstOrDefaultAsync();
-            bool isThereSimilarFullUrl = linkWithSimilarFullUrl is not null;
-            if (isThereSimilarFullUrl && !linkWithSimilarFullUrl!.IsPrivate)
+            Url? linkWithSimilarFullUrlFromThisUser = await _context.UrlList.Where(l => l.FullUrl == modelDTO.FullUrl && l.UserId == modelDTO.UserId ).FirstOrDefaultAsync();
+            bool isThereSimilarFullUrl = linkWithSimilarFullUrlFromThisUser is not null;
+            if (isThereSimilarFullUrl && !linkWithSimilarFullUrlFromThisUser!.IsPrivate)
             {
-                linkWithSimilarFullUrl.ShortUrl = _configuration["shortenedBegining"] + "/" + linkWithSimilarFullUrl.ShortUrl;
-                return _mapper.Map<LinkDTO>(linkWithSimilarFullUrl);
+                linkWithSimilarFullUrlFromThisUser.ShortUrl = ShortenHelper.AssembleShortUrl(linkWithSimilarFullUrlFromThisUser.ShortUrl, _configuration["shortenedBegining"]);
+                return _mapper.Map<LinkDTO>(linkWithSimilarFullUrlFromThisUser);
             }
             string shortened = string.Empty;
             modelDTO.UserId ??= "";
@@ -67,7 +68,7 @@ namespace BusinessLayer.Services
             await _context.SaveChangesAsync();
             urlObj.ShortUrl = IdToShortURL(urlObj.Id);
             await _context.SaveChangesAsync();
-            modelDTO.ShortUrl = _configuration["shortenedBegining"] + "/" + urlObj.ShortUrl;
+            modelDTO.ShortUrl = ShortenHelper.AssembleShortUrl(urlObj.ShortUrl, _configuration["shortenedBegining"]);
             return modelDTO;
 
         }
@@ -82,7 +83,7 @@ namespace BusinessLayer.Services
                 modelDTO.UrlList = await _context.UrlList.Where(i => i.UserId == userId).ToListAsync();
                 foreach (Url url in modelDTO.UrlList)
                 {
-                    url.ShortUrl = _configuration["shortenedBegining"] + "/" + url.ShortUrl;
+                    url.ShortUrl = ShortenHelper.AssembleShortUrl(url.ShortUrl, _configuration["shortenedBegining"]);
                 }
 
                 for (int i = 0; i < modelDTO.UrlList.Count(); i++)
