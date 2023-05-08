@@ -67,5 +67,23 @@ namespace ShortenUrlWebApi.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteLink(Url url)
+        {
+            try
+            {
+                Url link = await _shortenService.DeleteLink(url);
+                return Ok(link);
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(url);
+            }
+            catch (UnauthorizedException)
+            {
+                return Unauthorized(url);
+            }
+        }
     }
 }

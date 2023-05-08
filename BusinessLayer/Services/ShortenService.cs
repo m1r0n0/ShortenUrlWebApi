@@ -143,5 +143,26 @@ namespace BusinessLayer.Services
             }
             else throw new NotFoundException();
         }
+
+        public async Task<Url> DeleteLink(Url url)
+        {
+            url.ShortUrl = url.ShortUrl.Split('/').ToList().Last();
+            Url? link = await _context.UrlList.Where(u => u.ShortUrl == url.ShortUrl).FirstOrDefaultAsync();
+            if (link != null)
+            {
+                if (link.UserId == url.UserId)
+                {
+                    _context.Entry(link).State = EntityState.Deleted;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    throw new UnauthorizedException();
+                }
+            }
+            else throw new NotFoundException();
+
+            return link;
+        }
     }
 }
