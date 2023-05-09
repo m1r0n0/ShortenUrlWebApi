@@ -1,6 +1,7 @@
 ﻿using BusinessLayer.DTOs;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services
 {
@@ -11,59 +12,42 @@ namespace BusinessLayer.Services
         {
             _context = context;
         }
-        public UserEmailIdDTO GetUserIDFromUserEmail(string userEmail)
+        public async Task<UserEmailIdDTO> GetUserIDFromUserEmail(string userEmail)
         {
-            UserEmailIdDTO userEmailIdDTO = new();
-            userEmailIdDTO.NewEmail = userEmail;
-            var tempUserEmailToIdDTO = _context.UserList?.Where(item => item.Email == userEmail)?.FirstOrDefault();
-            if (tempUserEmailToIdDTO == null)
+            UserEmailIdDTO userEmailIdDTO = new()
             {
-                userEmailIdDTO.UserId = "";
-            }
-            else
-            {
-                userEmailIdDTO.UserId = tempUserEmailToIdDTO.Id;
-            }
+                NewEmail = userEmail
+            };
+            User? tempUserEmailToIdDTO = await _context.UserList?.Where(item => item.Email == userEmail)?.FirstOrDefaultAsync()!;
+            userEmailIdDTO.UserId = tempUserEmailToIdDTO == null ? "" : tempUserEmailToIdDTO.Id;
             return userEmailIdDTO;
         }
 
-        public UserEmailIdDTO GetUserEmailFromUserID(string userId)
+        public async Task<UserEmailIdDTO> GetUserEmailFromUserID(string userId)
         {
-            UserEmailIdDTO userEmailIdDTO = new();
-            userEmailIdDTO.UserId = userId;
-            var tempUserEmailToIdDTO = _context.UserList?.Where(item => item.Id == userId)?.FirstOrDefault();
-            if (tempUserEmailToIdDTO == null)
+            UserEmailIdDTO userEmailIdDTO = new()
             {
-                userEmailIdDTO.NewEmail = "";
-            }
-            else
-            {
-                userEmailIdDTO.NewEmail = tempUserEmailToIdDTO.Email;
-            }
+                UserId = userId
+            };
+            User? tempUser = await _context.UserList?.Where(item => item.Id == userId)?.FirstOrDefaultAsync()!;
+            userEmailIdDTO.NewEmail = tempUser == null ? "" : tempUser.Email;
             return userEmailIdDTO;
         }
 
-        public bool CheckGivenEmailForExistingInDB(string email)
+        public async Task<bool> CheckGivenEmailForExistingInDB(string email)
         {
-            var tempModel = _context.UserList?.Where(item => item.Email == email).FirstOrDefault();
-            if (tempModel == null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            bool isEmailExists = await _context.UserList?.AnyAsync(item => item.Email == email)!;
+            return isEmailExists;
         }
 
-        public UserEmailIdDTO setNewUserEmail(string newUserEmail, string userID)
+        public async Task<UserEmailIdDTO> setNewUserEmail(string newUserEmail, string userID)
         {
             UserEmailIdDTO userEmailIdDTO = new(userID);
-            var userToPatch = _context.UserList?.Where(user => user.Id == userID).FirstOrDefault();
-            var probablyExistingUser = _context.UserList?.Where(user => user.Email == newUserEmail).FirstOrDefault();
+            var userToPatch = await _context.UserList?.Where(user => user.Id == userID).FirstOrDefaultAsync()!;
+            var probablyExistingUser = await _context.UserList?.Where(user => user.Email == newUserEmail).FirstOrDefaultAsync()!;
             if (probablyExistingUser == null)
             {
-                updateUserInDB();
+                UpdateUserInDB();
                 userEmailIdDTO.NewEmail = newUserEmail;
             }
             else
@@ -72,7 +56,7 @@ namespace BusinessLayer.Services
             }
             return userEmailIdDTO;
 
-            void updateUserInDB()
+            void UpdateUserInDB()
             {
                 userToPatch.Email = newUserEmail;
                 userToPatch.NormalizedEmail = newUserEmail.ToUpper();

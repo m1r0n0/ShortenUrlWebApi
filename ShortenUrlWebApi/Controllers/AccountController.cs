@@ -31,7 +31,7 @@ namespace ShortenUrlWebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (_accountService.CheckGivenEmailForExistingInDB(model.Email))
+                if (await _accountService.CheckGivenEmailForExistingInDB(model.Email))
                 {
                     return Conflict(model);
                 }
@@ -39,17 +39,10 @@ namespace ShortenUrlWebApi.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    UserEmailIdDTO emailIdDTO = _accountService.GetUserIDFromUserEmail(model.Email);
+                    UserEmailIdDTO emailIdDTO = await _accountService.GetUserIDFromUserEmail(model.Email);
                     model.UserId = emailIdDTO.UserId;
                     await _signInManager.SignInAsync(user, false);
                     return Ok(model);
-                }
-                else
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
                 }
             }
             return BadRequest(model);
@@ -63,48 +56,42 @@ namespace ShortenUrlWebApi.Controllers
                 await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
             if (result.Succeeded)
             {
-                UserEmailIdDTO emailIdDTO = _accountService.GetUserIDFromUserEmail(model.Email);
+                UserEmailIdDTO emailIdDTO = await _accountService.GetUserIDFromUserEmail(model.Email);
                 model.UserId = emailIdDTO.UserId;
                 return Ok(model);
-            }
-            else
-            {
-                ModelState.AddModelError("", "Incorrect login and (or) password");
             }
             return BadRequest(model);
         }
 
         [HttpGet]
-        public UserEmailIdDTO GetUserID(string userEmail)
+        public async Task<UserEmailIdDTO> GetUserID(string userEmail)
         {
-            return _accountService.GetUserIDFromUserEmail(userEmail);
+            return await _accountService.GetUserIDFromUserEmail(userEmail);
         }
 
         [HttpGet]
-        public UserEmailIdDTO GetUserEmail(string userID)
+        public async Task<UserEmailIdDTO> GetUserEmail(string userID)
         {
-            return _accountService.GetUserEmailFromUserID(userID);
+            return await _accountService.GetUserEmailFromUserID(userID);
         }
 
         [HttpGet]
-        public CheckExistingEmailDTO CheckEmailExisting(string email)
+        public async Task<CheckExistingEmailDTO> CheckEmailExisting(string email)
         {
-            return new(email, _accountService.CheckGivenEmailForExistingInDB(email));
+            return new(email, await _accountService.CheckGivenEmailForExistingInDB(email));
         }
 
         [HttpPatch]
-        public UserEmailIdDTO ChangeUserEmail(UserEmailIdDTO model)
+        public async Task<UserEmailIdDTO> ChangeUserEmail(UserEmailIdDTO model)
         {
-            return _accountService.setNewUserEmail(model.NewEmail, model.UserId);
+            return await _accountService.setNewUserEmail(model.NewEmail!, model.UserId);
         }
 
         [HttpPatch]
         public async Task<IActionResult> ChangeUserPassword(UserPasswordIdDTO model)
         {
-            User user = _accountService.GetUserById(model.UserId);
-
+            User user = _accountService.GetUserById(model.UserId)!;
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
             var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
             if (result.Succeeded)
             {
@@ -113,7 +100,7 @@ namespace ShortenUrlWebApi.Controllers
             else
             {
                 return BadRequest(model);
-            };
+            }
         }
     }
 }

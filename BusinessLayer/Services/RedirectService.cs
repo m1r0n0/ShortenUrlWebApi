@@ -1,6 +1,7 @@
 ﻿using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace BusinessLayer.Services
@@ -17,12 +18,11 @@ namespace BusinessLayer.Services
             _context = applicationContext;
             _configuration = configuration;
         }
-        public string GetFullUrlToRedirect(string shortUrl, string userId)
+        public async Task<string> GetFullUrlToRedirect(string shortUrl, string userId)
         {
-            string fullUrl = string.Empty;
-            string checkHttp = string.Empty;
+            string fullUrl;
             int id = _shortenService.ShortURLToID(shortUrl);
-            var url = _context.UrlList.Where(x => x.Id.Equals(id)).FirstOrDefault();
+            var url = await _context.UrlList.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
 
             if (shortUrl != null)
             {
@@ -64,11 +64,8 @@ namespace BusinessLayer.Services
 
             void PrepareFullUrlToRedirectInWWW()
             {
-
-                if (fullUrl != string.Empty)
-                {
-                    if (!(fullUrl.StartsWith("http://") || fullUrl.StartsWith("https://"))) fullUrl = "https://" + fullUrl;
-                }
+                if (fullUrl == string.Empty) return;
+                if (!(fullUrl.StartsWith("http://") || fullUrl.StartsWith("https://"))) fullUrl = "https://" + fullUrl;
             }
         }
     }

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Exceptions;
+using BusinessLayer.Helpers;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace BusinessLayer.Services
@@ -25,55 +27,63 @@ namespace BusinessLayer.Services
 
         public async Task<LinkDTO> CreateShortLinkFromFullUrl(LinkDTO modelDTO)
         {
-            string _shortened = string.Empty;
-            bool _isThereSimilar = false;
-            if (modelDTO.UserId == null)
+            Url? linkWithSimilarFullUrlFromThisUser = await _context.UrlList.Where(l => l.FullUrl == modelDTO.FullUrl && l.UserId == modelDTO.UserId).FirstOrDefaultAsync();
+            bool isThereSimilarFullUrl = linkWithSimilarFullUrlFromThisUser is not null;
+            if (isThereSimilarFullUrl)
             {
-                modelDTO.UserId = "";
+                linkWithSimilarFullUrlFromThisUser.ShortUrl = ShortenHelper.AssembleShortUrl(linkWithSimilarFullUrlFromThisUser.ShortUrl, _configuration["shortenedBegining"]);
+                return _mapper.Map<LinkDTO>(linkWithSimilarFullUrlFromThisUser);
             }
+            string shortened = string.Empty;
+            modelDTO.UserId ??= "";
             while (true)
             {
-                var appropriateShortLink = _context.UrlList.Where(x => x.ShortUrl.Equals(_shortened)).FirstOrDefault();
-                if (appropriateShortLink != null)
+                Url? appropriateLink = await _context.UrlList.Where(x => x.ShortUrl.Equals(shortened))
+                    .FirstOrDefaultAsync();
+                bool isThereSimilarShortUrl = false;
+                if (appropriateLink != null)
                 {
-                    if (_shortened == appropriateShortLink.ShortUrl)
+                    if (shortened == appropriateLink.ShortUrl)
                     {
-                        _isThereSimilar = true;
+                        isThereSimilarShortUrl = true;
                         break;
                     }
                     else
                     {
-                        _isThereSimilar = false;
+                        isThereSimilarShortUrl = false;
                     }
                 }
                 else
                     break;
 
-                if (!_isThereSimilar)
+                if (!isThereSimilarShortUrl)
                 {
                     break;
                 }
             }
-            Url urlObj = new() { UserId = modelDTO.UserId, FullUrl = modelDTO.FullUrl, IsPrivate = modelDTO.IsPrivate };
+
+            Url urlObj = new()
+            { UserId = modelDTO.UserId, FullUrl = modelDTO.FullUrl, IsPrivate = modelDTO.IsPrivate };
             _context.UrlList.Add(urlObj);
             await _context.SaveChangesAsync();
             urlObj.ShortUrl = IdToShortURL(urlObj.Id);
             await _context.SaveChangesAsync();
-            modelDTO.ShortUrl = _configuration["shortenedBegining"] + "/" + urlObj.ShortUrl;
+            modelDTO.ShortUrl = ShortenHelper.AssembleShortUrl(urlObj.ShortUrl, _configuration["shortenedBegining"]);
             return modelDTO;
+
         }
 
-        public UrlListDTO GetURLsForCurrentUser(string userId)
+        public async Task<UrlListDTO> GetURLsForCurrentUser(string userId)
         {
             UrlListDTO tempList = new UrlListDTO();
             LinkDTO modelDTO = new();
             LinkForMyLinks link = new LinkForMyLinks();
             if (_context.UrlList != null)
             {
-                modelDTO.UrlList = _context.UrlList.Where(i => i.UserId == userId).ToList();
+                modelDTO.UrlList = await _context.UrlList.Where(i => i.UserId == userId).ToListAsync();
                 foreach (Url url in modelDTO.UrlList)
                 {
-                    url.ShortUrl = _configuration["shortenedBegining"] + "/" + url.ShortUrl;
+                    url.ShortUrl = ShortenHelper.AssembleShortUrl(url.ShortUrl, _configuration["shortenedBegining"]);
                 }
 
                 for (int i = 0; i < modelDTO.UrlList.Count(); i++)
@@ -94,51 +104,65 @@ namespace BusinessLayer.Services
                 shorturl += (map[n % 62]);
                 n /= 62;
             }
-            return new String(shorturl.ToCharArray().Reverse().ToArray()).ToString(); ;
+            return new String(shorturl.ToCharArray().Reverse().ToArray()).ToString();
         }
 
-        public int ShortURLToID(string shortURL)
+        public int ShortURLToID(string shortUrl)
         {
             int id = 0;
-            for (int i = 0; i < shortURL.Length; i++)
+            for (int i = 0; i < shortUrl.Length; i++)
             {
-                if ('a' <= shortURL[i] &&
-                           shortURL[i] <= 'z')
-                    id = id * 62 + shortURL[i] - 'a';
-                if ('A' <= shortURL[i] &&
-                           shortURL[i] <= 'Z')
-                    id = id * 62 + shortURL[i] - 'A' + 26;
-                if ('0' <= shortURL[i] &&
-                           shortURL[i] <= '9')
-                    id = id * 62 + shortURL[i] - '0' + 52;
+                if ('a' <= shortUrl[i] &&
+                           shortUrl[i] <= 'z')
+                    id = id * 62 + shortUrl[i] - 'a';
+                if ('A' <= shortUrl[i] &&
+                           shortUrl[i] <= 'Z')
+                    id = id * 62 + shortUrl[i] - 'A' + 26;
+                if ('0' <= shortUrl[i] &&
+                           shortUrl[i] <= '9')
+                    id = id * 62 + shortUrl[i] - '0' + 52;
             }
             return id;
         }
 
-        public void ChangePrivacy(string shortUrl, bool state, string userId)
+        public async Task ChangePrivacy(string shortUrl, bool state, string userId)
         {
-            var link = _context.UrlList.Where(x => x.ShortUrl == shortUrl).FirstOrDefault();
+            Url? link = await _context.UrlList.Where(x => x.ShortUrl == shortUrl).FirstOrDefaultAsync();
             if (link != null)
             {
                 if (link.UserId != String.Empty)
                 {
                     if (link.UserId == userId)
                     {
-                        if (state)
-                        {
-                            link.IsPrivate = false;
-                        }
-                        else
-                        {
-                            link.IsPrivate = true;
-                        }
-                        _context.SaveChanges();
+                        link.IsPrivate = !state;
+                        await _context.SaveChangesAsync();
                     }
                 }
                 else throw new UnauthorizedException();
 
             }
             else throw new NotFoundException();
+        }
+
+        public async Task<Url> DeleteLink(Url url)
+        {
+            url.ShortUrl = url.ShortUrl.Split('/').ToList().Last();
+            Url? link = await _context.UrlList.Where(u => u.ShortUrl == url.ShortUrl).FirstOrDefaultAsync();
+            if (link != null)
+            {
+                if (link.UserId == url.UserId)
+                {
+                    _context.Entry(link).State = EntityState.Deleted;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    throw new UnauthorizedException();
+                }
+            }
+            else throw new NotFoundException();
+
+            return link;
         }
     }
 }

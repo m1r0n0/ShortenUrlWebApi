@@ -29,16 +29,16 @@ namespace ShortenUrlWebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<UrlListDTO> GetLinksForCurrentUser(string userID)
+        public async Task<UrlListDTO> GetLinksForCurrentUser(string userID)
         {
-            UrlListDTO linkDTO = _shortenService.GetURLsForCurrentUser(userID);
+            UrlListDTO linkDTO = await _shortenService.GetURLsForCurrentUser(userID);
             return linkDTO;
         }
 
         [HttpPut]
         public async Task<ActionResult<Url>> CreateLink(Url url)
         {
-            LinkDTO linkDTO = _mapper.Map<LinkDTO>(url);
+            var linkDTO = _mapper.Map<LinkDTO>(url);
             linkDTO = await _shortenService.CreateShortLinkFromFullUrl(linkDTO);
             return Ok(linkDTO);
         }
@@ -47,11 +47,11 @@ namespace ShortenUrlWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult ChangeLinkPrivacy(string shortUrl, bool state, string userID)
+        public async Task<IActionResult> ChangeLinkPrivacy(string shortUrl, bool state, string userID)
         {
             try
             {
-                _shortenService.ChangePrivacy(shortUrl, state, userID);
+                await _shortenService.ChangePrivacy(shortUrl, state, userID);
                 return Ok();
             }
             catch (UnauthorizedException)
@@ -65,6 +65,24 @@ namespace ShortenUrlWebApi.Controllers
             catch (BadRequestException)
             {
                 return BadRequest();
+            }
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteLink(Url url)
+        {
+            try
+            {
+                Url link = await _shortenService.DeleteLink(url);
+                return Ok(link);
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(url);
+            }
+            catch (UnauthorizedException)
+            {
+                return Unauthorized(url);
             }
         }
     }
